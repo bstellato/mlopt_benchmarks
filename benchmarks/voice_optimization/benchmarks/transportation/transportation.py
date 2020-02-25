@@ -107,8 +107,8 @@ for i in range(len(n_vec)):
     results_detail = results_detail.append(temp_detail)
 
 
-# Store cumulative results
-results_general.to_csv(os.path.join(output_folder,
-                                    "%s_general.csv" % name))
-results_detail.to_csv(os.path.join(output_folder,
-                                   "%s_detail.csv" % name))
+    # Store cumulative results
+    results_general.to_csv(os.path.join(output_folder,
+                                        "%s_general.csv" % name))
+    results_detail.to_csv(os.path.join(output_folder,
+                                       "%s_detail.csv" % name))
