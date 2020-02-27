@@ -4,7 +4,7 @@ import sys
 sys.path.append(os.getcwd())
 
 from mlopt.sampling import uniform_sphere_sample
-from mlopt.utils import benchmark
+from mlopt_utils.utils import benchmark
 import mlopt
 import numpy as np
 import scipy.sparse as spa
@@ -20,7 +20,7 @@ p_vec = np.array([10, 20, 30, 40, 50])
 
 # Output folder
 name = "portfolio"
-output_folder = "output/%s" % name
+output_folder = "results/%s" % name
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
@@ -82,8 +82,8 @@ for p in p_vec:
     results_detail = results_detail.append(temp_detail)
 
 
-# Store cumulative results
-results_general.to_csv(os.path.join(output_folder,
-                                    "%s_general.csv" % name))
-results_detail.to_csv(os.path.join(output_folder,
-                                   "%s_detail.csv" % name))
+    # Store cumulative results
+    results_general.to_csv(os.path.join(output_folder,
+                                        "%s_general.csv" % name))
+    results_detail.to_csv(os.path.join(output_folder,
+                                       "%s_detail.csv" % name))

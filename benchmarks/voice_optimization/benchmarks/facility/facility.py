@@ -10,7 +10,7 @@ import numpy as np
 import scipy.sparse as spa
 import cvxpy as cp
 import pandas as pd
-from mlopt.utils import benchmark
+from mlopt_utils.utils import benchmark
 
 
 np.random.seed(1)
@@ -28,7 +28,7 @@ results_detail = pd.DataFrame()
 name = "facility"
 
 # Output folder
-output_folder = "output/" + name
+output_folder = "results/" + name
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 

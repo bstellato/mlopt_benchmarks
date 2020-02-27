@@ -5,7 +5,7 @@ sys.path.append(os.getcwd())
 
 # Standard imports
 from mlopt.sampling import uniform_sphere_sample
-from mlopt.utils import benchmark
+from mlopt_utils.utils import benchmark
 import mlopt
 import numpy as np
 import scipy.sparse as spa
@@ -44,7 +44,7 @@ np.random.seed(1)
 name = "control"
 
 # Output folder
-output_folder = "output/" + name
+output_folder = "results/" + name
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
@@ -92,7 +92,7 @@ for T in T_vec:
 
     # Constraints on electric charge
     E_max = 50.  # Maximum charge
-    E_0 = cp.Parameter(nonneg=True, name='E_0')
+    E_0 = cp.Parameter((1,), nonneg=True, name='E_0')
 
     # Constraints on power
     P_max = 1.
@@ -179,8 +179,9 @@ for T in T_vec:
     results_general = results_general.append(temp_general)
     results_detail = results_detail.append(temp_detail)
 
-# Store cumulative results
-results_general.to_csv(os.path.join(output_folder,
-                                    "%s_general.csv" % name))
-results_detail.to_csv(os.path.join(output_folder,
-                                   "%s_detail.csv" % name))
+
+    # Store cumulative results
+    results_general.to_csv(os.path.join(output_folder,
+                                        "%s_general.csv" % name))
+    results_detail.to_csv(os.path.join(output_folder,
+                                       "%s_detail.csv" % name))

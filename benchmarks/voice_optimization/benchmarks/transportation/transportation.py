@@ -5,7 +5,7 @@ sys.path.append(os.getcwd())
 
 # Standard imports
 from mlopt.sampling import uniform_sphere_sample
-from mlopt.utils import benchmark
+from mlopt_utils.utils import benchmark
 import mlopt
 import numpy as np
 import scipy.sparse as spa
@@ -30,7 +30,7 @@ for i in np.arange(20, 100, 20):
 name = "transportation"
 
 # Output folder
-output_folder = "output/" + name
+output_folder = "results/" + name
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
@@ -102,7 +102,9 @@ for i in range(len(n_vec)):
     temp_general, temp_detail = benchmark(m, data_file,
                                           theta_bar,
                                           lambda n: sample(theta_bar, n),
-                                          {'n': n_dim, 'm': m_dim})
+                                          {'n': n_dim, 'm': m_dim}
+                                          )
+
     results_general = results_general.append(temp_general)
     results_detail = results_detail.append(temp_detail)
 
