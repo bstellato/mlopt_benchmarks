@@ -75,7 +75,7 @@ def benchmark(m,  # Optimizer
                 learner=mlopt.PYTORCH)
 
         nn_general, nn_detail = m.performance(theta_test, parallel=True)
-        m.save(data_file + "_nn")
+        m.save(data_file + "_nn", delete_existing=True)
 
         add_details(nn_general, predictor="NN", **dims)
         add_details(nn_detail, predictor="NN", **dims)
@@ -97,7 +97,7 @@ def benchmark(m,  # Optimizer
                     hyperplanes=False,
                     save_svg=True)
             oct_general, oct_detail = m.performance(theta_test, parallel=True)
-            m.save(data_file + "_oct")
+            m.save(data_file + "_oct", delete_existing=True)
             add_details(oct_general, predictor="OCT", **dims)
             add_details(oct_detail, predictor="OCT", **dims)
 
@@ -116,7 +116,7 @@ def benchmark(m,  # Optimizer
                     save_svg=True)
             octh_general, octh_detail = m.performance(theta_test,
                                                       parallel=True)
-            m.save(data_file + "_octh")
+            m.save(data_file + "_octh", delete_existing=True)
             add_details(octh_general, predictor="OCT-H", **dims)
             add_details(octh_detail, predictor="OCT-H", **dims)
 

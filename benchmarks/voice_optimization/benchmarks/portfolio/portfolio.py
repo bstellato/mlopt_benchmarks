@@ -15,8 +15,7 @@ import pandas as pd
 np.random.seed(1)
 
 # Define loop to train
-p_vec = np.array([10, 20, 30, 40, 50])
-#  p_vec = np.array([3, 4])
+p_vec = np.array([10, 20, 30, 40])
 
 # Output folder
 name = "portfolio"
