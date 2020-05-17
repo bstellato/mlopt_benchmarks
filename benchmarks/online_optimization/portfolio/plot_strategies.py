@@ -7,7 +7,7 @@ import sys
 sys.path.append(os.getcwd())
 
 from mlopt.sampling import uniform_sphere_sample
-from mlopt.utils import benchmark
+from mlopt_utils import benchmark
 import online_optimization.portfolio.simulation.settings as stg
 from online_optimization.portfolio.learning_data import learning_data, sample_around_points
 import mlopt

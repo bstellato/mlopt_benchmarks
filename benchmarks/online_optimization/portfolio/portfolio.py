@@ -3,7 +3,6 @@ import os
 import sys
 sys.path.append(os.getcwd())
 
-from mlopt.utils import benchmark
 import online_optimization.portfolio.simulation.settings as stg
 from online_optimization.portfolio.learning_data import learning_data, sample_around_points, get_dimensions
 from online_optimization.portfolio.utils import create_mlopt_problem, get_problem_dimensions
@@ -37,7 +36,7 @@ if __name__ == '__main__':
     EXAMPLE_NAME = STORAGE_DIR + '/portfolio_%d_' % k
 
     n_train = 100000
-    n_test = 1000
+    n_test = 10000
 
     # Define cost weights
     lambda_cost = {'risk': stg.RISK_COST,
@@ -76,7 +75,7 @@ if __name__ == '__main__':
                                t_end=t_end,
                                T_periods=T_periods,
                                lambda_cost=lambda_cost)
-    
+
 
     # Split dataset properly and shuffle
     np.random.seed(0)
@@ -95,7 +94,7 @@ if __name__ == '__main__':
 
     # Check if learning data already there
     if not os.path.isfile(EXAMPLE_NAME + 'data.pkl'):
-    
+
         # Sample around points
         df_train = sample_around_points(df_history_train,
                                         n_total=n_train)

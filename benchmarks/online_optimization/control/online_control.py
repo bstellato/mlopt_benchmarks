@@ -34,7 +34,7 @@ if __name__ == '__main__':
     T_total = 500
     tau = 1.0
     n_train = 100000
-    n_sim_test = 1000
+    n_sim_test = 10000
     nn_params = {
         'learning_rate': [0.0001, 0.001, 0.01],
         'batch_size': [32],
