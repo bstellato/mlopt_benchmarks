@@ -1,6 +1,6 @@
 #!/bin/zsh
 #SBATCH -c 1
-#SBATCH -n 12
+#SBATCH -n 16
 #SBATCH -N 1
 #SBATCH --time=2-00:00
 #SBATCH --gres=gpu:volta:1 -p gpu
@@ -12,8 +12,8 @@
 source /etc/profile
 
 # Activate environment
-sh /home/gridsan/stellato/miniconda/etc/profile.d/conda.sh
-conda activate python37
+. "/home/gridsan/stellato/miniconda/etc/profile.d/conda.sh"
+conda activate online
 
 # module load gurobi/8.0.1
 export GRB_LICENSE_FILE="/home/software/gurobi/gurobi.lic"

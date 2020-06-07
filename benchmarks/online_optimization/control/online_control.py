@@ -31,27 +31,18 @@ if __name__ == '__main__':
     EXAMPLE_NAME = STORAGE_DIR + '/control_%d_' % T_horizon
 
     # Problem data
-    T_total = 500
+    T_total = 10000  # Trajectory sampling to get points
     tau = 1.0
     n_train = 100000
-    n_sim_test = 10000
-    nn_params = {
-        'learning_rate': [0.0001, 0.001, 0.01],
-        'batch_size': [32],
-        'n_epochs': [20],
-        # OLD STUFF
-        # 'n_layers': [7, 10]
-        #  {'learning_rate': 0.0001, 'batch_size': 64, 'n_epochs': 300, 'n_layers': 10}
-        #  'learning_rate': [0.0001],
-        #  'batch_size': [64],
-        #  'n_epochs': [300],
-        #  'n_layers': [10]
-    }
+    n_test = T_total  # Number of samples in test set (new trajectory)
+    n_sim_test = 1000  # Closed-loop simulation
+    seed_train = 0
+    seed_test = 1
 
     logging.info(desc, " N = %d\n" % T_horizon)
 
     # Get trajectory
-    P_load = u.P_load_profile(T_total)
+    P_load = u.P_load_profile(T_total, seed=seed_train)
 
     # Create simulation data
     init_data = {'E': [7.7],
@@ -63,7 +54,7 @@ if __name__ == '__main__':
                  'sol': []}
 
     # Define problem
-    problem = u.control_problem(T_horizon, tau=tau)
+    problem, cost_function_data = u.control_problem(T_horizon, tau=tau)
 
     print("Get learning data by simulating closed loop")
     sim_data = u.simulate_loop(problem, init_data,
@@ -75,7 +66,7 @@ if __name__ == '__main__':
     df = u.sim_data_to_params(sim_data)
 
     # Create mlopt problem
-    m_mlopt = mlopt.Optimizer(problem.objective, problem.constraints,
+    m_mlopt = mlopt.Optimizer(problem,
                               log_level=logging.INFO,
                               parallel=True)
 
@@ -96,25 +87,23 @@ if __name__ == '__main__':
         # Get samples
         m_mlopt.get_samples(df_train,
                             parallel=True,
-                            filter_strategies=False)
-        #  m_mlopt._compute_sample_strategy_pairs(parallel=True)
+                            filter_strategies=False)  # Filter strategies after saving
         m_mlopt.save_training_data(EXAMPLE_NAME + 'data.pkl',
                                    delete_existing=True)
     else:
         print("Loading data from file")
         m_mlopt.load_training_data(EXAMPLE_NAME + 'data.pkl')
 
-        # DO NOT FILTER STRATEGIES
-        # m_mlopt.filter_strategies()
-        # m_mlopt.save_training_data(EXAMPLE_NAME + 'data_filtered.pkl',
-        #                            delete_existing=True)
+        # Filter strategies and resave
+        m_mlopt.filter_strategies(parallel=True)
+        m_mlopt.save_training_data(EXAMPLE_NAME + 'data_filtered.pkl',
+                                   delete_existing=True)
 
-    # # Learn optimizer
+    # Learn optimizer
     m_mlopt.train(learner=mlopt.PYTORCH,
                   n_best=10,
-                  filter_strategies=False,
-                  parallel=False,
-                  params=nn_params)
+                  filter_strategies=False,  # Do not filter strategies again
+                  parallel=True)
 
     # # Generate test trajectory and collect points
     logging.info("Simulate loop again to get trajectory points")
@@ -131,6 +120,8 @@ if __name__ == '__main__':
                                                   parallel=False,
                                                   use_cache=True)
 
+    # Evaluate closed-loop performance
+
     # Loop with basic function
     sim_data_test = u.simulate_loop(problem, init_data,
                                     u.basic_loop_solve,
@@ -143,8 +134,8 @@ if __name__ == '__main__':
                                      n_sim_test)
 
     # Evaluate loop performance
-    perf_solver = u.performance(problem, sim_data_test)
-    perf_mlopt = u.performance(problem, sim_data_mlopt)
+    perf_solver = u.performance(cost_function_data, sim_data_test)
+    perf_mlopt = u.performance(cost_function_data, sim_data_mlopt)
     res_general['perf_solver'] = perf_solver
     res_general['perf_mlopt'] = perf_mlopt
     res_general['perf_degradation_perc'] = 100 * (1. - perf_mlopt/perf_solver)

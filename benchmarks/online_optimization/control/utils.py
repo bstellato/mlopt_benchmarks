@@ -200,7 +200,9 @@ def control_problem(T=10,
 
     prob = cp.Problem(objective, constraints)
 
-    return prob
+    cost_function_data = {'alpha': alpha, 'beta': beta, 'gamma': gamma}
+
+    return prob, cost_function_data
 
 
 def populate_parameters(problem, params):
@@ -310,13 +312,16 @@ def simulate_loop(problem,
     return sim_data
 
 
-def performance(problem, sim_data):
+def performance(cost_data, sim_data):
     P = sim_data['P']
     z = sim_data['z']
     n_sim = len(P)
-    alpha = problem.objective.args[0].args[-3].args[0].value
-    beta = problem.objective.args[0].args[-2].args[0].value
-    gamma = problem.objective.args[0].args[-1].args[0].value
+    alpha = cost_data['alpha']
+    beta = cost_data['beta']
+    gamma = cost_data['gamma']
+    #  alpha = problem.objective.args[0].args[-3].args[0].value
+    #  beta = problem.objective.args[0].args[-2].args[0].value
+    #  gamma = problem.objective.args[0].args[-1].args[0].value
     cl_cost = 0
     for i in range(n_sim):
         cl_cost += alpha * (P[i] ** 2) + beta * P[i] + gamma * z[i]
