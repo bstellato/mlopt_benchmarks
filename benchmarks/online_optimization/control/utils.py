@@ -48,7 +48,7 @@ def plot_sim_data(sim_data, T_horizon,
     T_total = len(P_load)
     n_sim = T_total - 2 * T_horizon
     t_plot = range(n_sim)
-    f, axarr = plt.subplots(5, sharex=True)
+    f, axarr = plt.subplots(5, figsize=(50,10), sharex=True)
     f.suptitle(title)  # or plt.suptitle('Main title')
     axarr[0].plot(t_plot, sim_data['E'][:n_sim], label="E")
     axarr[0].legend()
@@ -205,11 +205,6 @@ def control_problem(T=10,
     return prob, cost_function_data
 
 
-def populate_parameters(problem, params):
-    for p in problem.parameters():
-        p.value = params[p.name()]
-
-
 def get_solution(problem):
     solution = {}
     for v in problem.variables():
@@ -236,8 +231,9 @@ def sim_data_to_params(sim_data):
 
 
 def basic_loop_solve(problem, params):
-    populate_parameters(problem, params)
-    #  problem.get_problem_data(cp.GUROBI)
+    # Populate parameters
+    for p in problem.parameters():
+        p.value = params[p.name()]
     problem.solve(solver=cp.GUROBI)
     if problem.status != 'optimal':
         raise ValueError('Error in Gurobi solution')
@@ -276,10 +272,9 @@ def simulate_loop(problem,
                   solve_fn,
                   P_load,
                   T_total,
+                  T_horizon,
                   tau=1.0):
 
-    T_horizon = [x for x in problem.parameters()
-                 if x.name() == 'P_load'][0].shape[0]
 
     sim_data = copy.deepcopy(init_data)
 

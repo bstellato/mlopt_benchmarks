@@ -3,7 +3,6 @@ import os
 import sys
 sys.path.append(os.getcwd())
 import online_optimization.control.utils as u
-import logging
 import numpy as np
 import mlopt
 import pickle
@@ -31,18 +30,17 @@ if __name__ == '__main__':
     EXAMPLE_NAME = STORAGE_DIR + '/control_%d_' % T_horizon
 
     # Problem data
-    T_total = 10000  # Trajectory sampling to get points
+    n_traj = 10000  # Trajectory sampling to get points
     tau = 1.0
     n_train = 100000
-    n_test = T_total  # Number of samples in test set (new trajectory)
-    n_sim_test = 1000  # Closed-loop simulation
+    n_test = n_traj  # Number of samples in test set (new trajectory)
     seed_train = 0
     seed_test = 1
 
-    logging.info(desc, " N = %d\n" % T_horizon)
+    print(desc, " N = %d\n" % T_horizon)
 
     # Get trajectory
-    P_load = u.P_load_profile(T_total, seed=seed_train)
+    P_load = u.P_load_profile(n_traj, seed=seed_train)
 
     # Create simulation data
     init_data = {'E': [7.7],
@@ -60,14 +58,14 @@ if __name__ == '__main__':
     sim_data = u.simulate_loop(problem, init_data,
                                u.basic_loop_solve,
                                P_load,
-                               T_total)
+                               n_traj,
+                               T_horizon)
 
     # Store simulation data as parameter values (avoid sol parameter)
     df = u.sim_data_to_params(sim_data)
 
     # Create mlopt problem
     m_mlopt = mlopt.Optimizer(problem,
-                              log_level=logging.INFO,
                               parallel=True)
 
 
@@ -94,10 +92,10 @@ if __name__ == '__main__':
         print("Loading data from file")
         m_mlopt.load_training_data(EXAMPLE_NAME + 'data.pkl')
 
-        # Filter strategies and resave
-        m_mlopt.filter_strategies(parallel=True)
-        m_mlopt.save_training_data(EXAMPLE_NAME + 'data_filtered.pkl',
-                                   delete_existing=True)
+    # Filter strategies and resave
+    m_mlopt.filter_strategies(parallel=True)
+    m_mlopt.save_training_data(EXAMPLE_NAME + 'data_filtered.pkl',
+                               delete_existing=True)
 
     # Learn optimizer
     m_mlopt.train(learner=mlopt.PYTORCH,
@@ -106,32 +104,36 @@ if __name__ == '__main__':
                   parallel=True)
 
     # # Generate test trajectory and collect points
-    logging.info("Simulate loop again to get trajectory points")
-    P_load_test = u.P_load_profile(n_sim_test, seed=1)
+    print("Simulate loop again to get trajectory points")
+    P_load_test = u.P_load_profile(n_test, seed=1)
 
     sim_data_test = u.simulate_loop(problem, init_data,
                                     u.basic_loop_solve,
                                     P_load_test,
-                                    T_total)
+                                    n_test,
+                                    T_horizon)
 
     # Evaluate open-loop performance on those parameters
+    print("Evaluate open loop performance")
     df_test = u.sim_data_to_params(sim_data_test)
     res_general, res_detail = m_mlopt.performance(df_test,
                                                   parallel=False,
                                                   use_cache=True)
 
-    # Evaluate closed-loop performance
+    print("Evaluate closed loop performance")
 
     # Loop with basic function
     sim_data_test = u.simulate_loop(problem, init_data,
                                     u.basic_loop_solve,
                                     P_load_test,
-                                    n_sim_test)
+                                    n_test,
+                                    T_horizon)
     # Loop with predictor
     sim_data_mlopt = u.simulate_loop(m_mlopt, init_data,
                                      u.predict_loop_solve,
                                      P_load_test,
-                                     n_sim_test)
+                                     n_test,
+                                     T_horizon)
 
     # Evaluate loop performance
     perf_solver = u.performance(cost_function_data, sim_data_test)
@@ -151,6 +153,7 @@ if __name__ == '__main__':
                        header=True)
     res_detail.to_csv(EXAMPLE_NAME + "test_detail.csv")
 
+    print("Plot data")
     u.plot_sim_data(sim_data_mlopt, T_horizon, P_load_test,
                     title='sim_data_mlopt',
                     name=EXAMPLE_NAME)
