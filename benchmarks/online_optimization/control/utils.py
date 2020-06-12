@@ -139,16 +139,17 @@ def control_problem(T=10,
     E = cp.Variable(T, name='E')  # Capacitor
     P = cp.Variable(T, name='P')      # Cell power
     s = cp.Variable(T+1, name='s')
-    z = cp.Variable(T, name='z', boolean=True)
-    w = cp.Variable(T, name='w', integer=True)
-    d = cp.Variable(T, name='d', boolean=True)
+    z = cp.Variable(T, name='z', integer=True)
+    w = cp.Variable(T, name='w')
+    d = cp.Variable(T, name='d', integer=True)
 
     # Constraints
     bounds = []
     #  bounds += [E_min <= E, E <= E_max]
     bounds += [0 <= P, P <= z * P_max]
     bounds += [-1 <= w, w <= 1]
-    #  bounds += [0. <= z, z <= 1]
+    bounds += [0 <= z, z <= 1]
+    bounds += [0 <= d, d <= 1]
 
     # Capacitor dynamics
     capacitor_dynamics = []

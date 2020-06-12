@@ -54,15 +54,6 @@ if __name__ == '__main__':
     # Define problem
     problem, cost_function_data = u.control_problem(T_horizon, tau=tau)
 
-    print("Get learning data by simulating closed loop")
-    sim_data = u.simulate_loop(problem, init_data,
-                               u.basic_loop_solve,
-                               P_load,
-                               n_traj,
-                               T_horizon)
-
-    # Store simulation data as parameter values (avoid sol parameter)
-    df = u.sim_data_to_params(sim_data)
 
     # Create mlopt problem
     m_mlopt = mlopt.Optimizer(problem,
@@ -71,6 +62,16 @@ if __name__ == '__main__':
 
     # Check if learning data already there
     if not os.path.isfile(EXAMPLE_NAME + 'data.pkl'):
+
+        print("Get learning data by simulating closed loop")
+        sim_data = u.simulate_loop(problem, init_data,
+                                   u.basic_loop_solve,
+                                   P_load,
+                                   n_traj,
+                                   T_horizon)
+
+        # Store simulation data as parameter values (avoid sol parameter)
+        df = u.sim_data_to_params(sim_data)
 
 
         # Sample over balls around all the parameters
@@ -108,7 +109,7 @@ if __name__ == '__main__':
 
     # # Generate test trajectory and collect points
     print("Simulate loop again to get trajectory points")
-    P_load_test = u.P_load_profile(n_test, seed=1)
+    P_load_test = u.P_load_profile(n_test, seed=seed_test)
 
     sim_data_test = u.simulate_loop(problem, init_data,
                                     u.basic_loop_solve,
