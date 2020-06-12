@@ -103,6 +103,9 @@ if __name__ == '__main__':
                   filter_strategies=False,  # Do not filter strategies again
                   parallel=True)
 
+    # Save model
+    m_mlopt.save(EXAMPLE_NAME + 'model', delete_existing=True)
+
     # # Generate test trajectory and collect points
     print("Simulate loop again to get trajectory points")
     P_load_test = u.P_load_profile(n_test, seed=1)
@@ -120,43 +123,42 @@ if __name__ == '__main__':
                                                   parallel=False,
                                                   use_cache=True)
 
-    print("Evaluate closed loop performance")
-
+    #  print("Evaluate closed loop performance")
     # Loop with basic function
-    sim_data_test = u.simulate_loop(problem, init_data,
-                                    u.basic_loop_solve,
-                                    P_load_test,
-                                    n_test,
-                                    T_horizon)
-    # Loop with predictor
-    sim_data_mlopt = u.simulate_loop(m_mlopt, init_data,
-                                     u.predict_loop_solve,
-                                     P_load_test,
-                                     n_test,
-                                     T_horizon)
-
-    # Evaluate loop performance
-    perf_solver = u.performance(cost_function_data, sim_data_test)
-    perf_mlopt = u.performance(cost_function_data, sim_data_mlopt)
-    res_general['perf_solver'] = perf_solver
-    res_general['perf_mlopt'] = perf_mlopt
-    res_general['perf_degradation_perc'] = 100 * (1. - perf_mlopt/perf_solver)
-
-    # Export files
-    with open(EXAMPLE_NAME + 'sim_data_mlopt.pkl', 'wb') as handle:
-        pickle.dump(sim_data_mlopt, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    with open(EXAMPLE_NAME + 'sim_data_test.pkl', 'wb') as handle:
-        pickle.dump(sim_data_test, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    #  sim_data_test = u.simulate_loop(problem, init_data,
+    #                                  u.basic_loop_solve,
+    #                                  P_load_test,
+    #                                  n_test,
+    #                                  T_horizon)
+    #  # Loop with predictor
+    #  sim_data_mlopt = u.simulate_loop(m_mlopt, init_data,
+    #                                   u.predict_loop_solve,
+    #                                   P_load_test,
+    #                                   n_test,
+    #                                   T_horizon)
+    #
+    #  # Evaluate loop performance
+    #  perf_solver = u.performance(cost_function_data, sim_data_test)
+    #  perf_mlopt = u.performance(cost_function_data, sim_data_mlopt)
+    #  res_general['perf_solver'] = perf_solver
+    #  res_general['perf_mlopt'] = perf_mlopt
+    #  res_general['perf_degradation_perc'] = 100 * (1. - perf_mlopt/perf_solver)
+    #
+    #  # Export files
+    #  with open(EXAMPLE_NAME + 'sim_data_mlopt.pkl', 'wb') as handle:
+    #      pickle.dump(sim_data_mlopt, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    #
+    #  with open(EXAMPLE_NAME + 'sim_data_test.pkl', 'wb') as handle:
+    #      pickle.dump(sim_data_test, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     res_general.to_csv(EXAMPLE_NAME + "test_general.csv",
                        header=True)
     res_detail.to_csv(EXAMPLE_NAME + "test_detail.csv")
 
-    print("Plot data")
-    u.plot_sim_data(sim_data_mlopt, T_horizon, P_load_test,
-                    title='sim_data_mlopt',
-                    name=EXAMPLE_NAME)
-    u.plot_sim_data(sim_data_test, T_horizon, P_load_test,
-                    title='sim_data_test',
-                    name=EXAMPLE_NAME)
+    #  print("Plot data")
+    #  u.plot_sim_data(sim_data_mlopt, T_horizon, P_load_test,
+    #                  title='sim_data_mlopt',
+    #                  name=EXAMPLE_NAME)
+    #  u.plot_sim_data(sim_data_test, T_horizon, P_load_test,
+    #                  title='sim_data_test',
+    #                  name=EXAMPLE_NAME)
