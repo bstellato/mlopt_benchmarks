@@ -43,7 +43,7 @@ if __name__ == '__main__':
     P_load = u.P_load_profile(n_traj, seed=seed_train)
 
     # Create simulation data
-    init_data = {'E': [8.7],
+    init_data = {'E': [7.7],
                  'z': [0.],
                  's': [0.],
                  'P': [],
