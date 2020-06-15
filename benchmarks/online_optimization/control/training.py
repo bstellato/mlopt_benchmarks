@@ -108,27 +108,33 @@ if __name__ == '__main__':
     # Save model
     m_mlopt.save(EXAMPLE_NAME + 'model', delete_existing=True)
 
+
+    # Evaluate performance
     # # Generate test trajectory and collect points
-    print("Simulate loop again to get trajectory points")
-    P_load_test = u.P_load_profile(n_test, seed=seed_test)
+    #  print("Simulate loop again to get trajectory points")
+    #  P_load_test = u.P_load_profile(n_test, seed=seed_test)
+    #
+    #  sim_data_test = u.simulate_loop(problem, init_data,
+    #                                  u.basic_loop_solve,
+    #                                  P_load_test,
+    #                                  n_test,
+    #                                  T_horizon)
+    #
+    #  # Evaluate open-loop performance on those parameters
+    #  print("Evaluate open loop performance")
+    #  df_test = u.sim_data_to_params(sim_data_test)
+    #  res_general, res_detail = m_mlopt.performance(df_test,
+    #                                                parallel=False,
+    #                                                use_cache=True)
+    #
+    #  res_general.to_csv(EXAMPLE_NAME + "test_general.csv",
+    #                     header=True)
+    #  res_detail.to_csv(EXAMPLE_NAME + "test_detail.csv")
 
-    sim_data_test = u.simulate_loop(problem, init_data,
-                                    u.basic_loop_solve,
-                                    P_load_test,
-                                    n_test,
-                                    T_horizon)
 
-    # Evaluate open-loop performance on those parameters
-    print("Evaluate open loop performance")
-    df_test = u.sim_data_to_params(sim_data_test)
-    res_general, res_detail = m_mlopt.performance(df_test,
-                                                  parallel=False,
-                                                  use_cache=True)
 
-    res_general.to_csv(EXAMPLE_NAME + "test_general.csv",
-                       header=True)
-    res_detail.to_csv(EXAMPLE_NAME + "test_detail.csv")
-#
+
+    # Old performance evaluation
     #  print("Evaluate closed loop performance")
     #  # Loop with MPC basic function
     #  sim_data_test = u.simulate_loop(problem, init_data,
