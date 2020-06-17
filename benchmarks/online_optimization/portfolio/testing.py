@@ -27,9 +27,9 @@ parser = argparse.ArgumentParser(description=desc)
 parser.add_argument('--sparsity', type=int, default=5, metavar='N',
                     help='sparsity level (default: Full)')
 arguments = parser.parse_args()
-k = arguments.sparsity
+k_sparsity = arguments.sparsity
 
-EXAMPLE_NAME = STORAGE_DIR + '/portfolio_%d_' % k
+EXAMPLE_NAME = STORAGE_DIR + '/portfolio_%d_' % k_sparsity
 
 n_test = 10000
 
@@ -50,7 +50,7 @@ T_periods = 1
 n, m = get_dimensions()
 
 # Define mlopt problem
-problem = create_problem(n, m, T_periods, k=k,
+problem = create_problem(n, m, T_periods, k=k_sparsity,
                          lambda_cost=lambda_cost)
 
 # Load model
@@ -88,7 +88,7 @@ results_heuristic = m._problem.solve_parametric(df,
 m._problem.solver_options.pop('MIPGap')  # Remove MIP Gap option
 
 
-# Iterate over k
+# Iterate over k (best)
 results = []
 results_detail = []
 k_max = 101
@@ -105,14 +105,14 @@ for k in [1] + list(range(10, min(k_max, m._learner.n_classes), 10)):
         parallel=False, use_cache=True)
 
     # Add horizon
-    results_k['T'] = T_horizon
-    results_detail_k['T'] = [T_horizon] * len(results_detail_k)
+    results_k['K'] = k_sparsity
+    results_detail_k['K'] = [k_sparsity] * len(results_detail_k)
 
     results.append(results_k)
     results_detail.append(results_detail_k)
 
     # Store
-    df_results = pd.concat(results, axis=1).T.sort_values(by=['T', 'n_best'])
+    df_results = pd.concat(results, axis=1).T.sort_values(by=['K', 'n_best'])
     df_results.to_csv(EXAMPLE_NAME + 'performance.csv')
-    df_results_detail = pd.concat(results_detail, ignore_index=True).sort_values(by=['T', 'n_best']).reset_index(drop=True)
+    df_results_detail = pd.concat(results_detail, ignore_index=True).sort_values(by=['K', 'n_best']).reset_index(drop=True)
     df_results_detail.to_csv(EXAMPLE_NAME + 'performance_detail.csv')
