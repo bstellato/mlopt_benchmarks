@@ -16,7 +16,7 @@ class BasePolicy(object):
         self.constraints = []
 
     @abstractmethod
-    def trades(self, portfolio, t=pd.datetime.today()):
+    def trades(self, portfolio, t=dt.datetime.today()):
         """Trades list given current portfolio and time t.
         """
         return NotImplemented
@@ -34,7 +34,7 @@ class Hold(BasePolicy):
     """Hold initial portfolio.
     """
 
-    def trades(self, portfolio, t=pd.datetime.today()):
+    def trades(self, portfolio, t=dt.datetime.today()):
         return self._nulltrade(portfolio)
 
 
@@ -79,18 +79,23 @@ class Optimal(BasePolicy):
 
         # Formulate problem
         w = [cp.Variable(n) for t in range(self.periods + 1)]
+        p = [cp.Variable(m) for t in range(self.periods + 1)]
 
         if k is not None:
             # Sparsity constraints
-            s = [cp.Variable(n, boolean=True) for t in range(self.periods)]
+            s = [cp.Variable(n, integer=True) for t in range(self.periods)]
 
         # Define cost components
         cost = 0
         constraints = [w[0] == w_init]
+        if k is not None:
+            for t in range(self.periods):
+                constraints += [0 <= s[t], s[t] <= 1]
+
         for t in range(1, self.periods + 1):
 
             risk_cost = lam['risk'] * (
-                cp.sum_squares(cp.multiply(sqrt_Sigma_F, F.T * w[t])) +
+                cp.sum_squares(cp.multiply(sqrt_Sigma_F, p[t])) +
                 cp.sum_squares(cp.multiply(sqrt_D, w[t])))
 
             holding_cost = lam['borrow'] * \
@@ -100,10 +105,10 @@ class Optimal(BasePolicy):
                 lam['norm1_trade'] * cp.norm(w[t] - w[t-1], 1)
             #  lam['norm2_trade'] * cp.sum_squares(w[t] - w[t-1])  # + \
 
-            cost += hat_r[t-1] * w[t] + \
+            cost += hat_r[t-1] @ w[t] + \
                 - risk_cost - holding_cost - transaction_cost
 
-            constraints += [cp.sum(w[t]) == 1.]
+            constraints += [F.T @ w[t] == p[t], cp.sum(w[t]) == 1.]
 
             if k is not None:
                 # Cardinality constraint (big-M)
@@ -148,7 +153,7 @@ class Optimal(BasePolicy):
         self.params['risk']['sqrt_D'].value = sqrt_D
         self.params['w_init'].value = w_init
 
-    def trades(self, portfolio, t=pd.datetime.today(), verbose=False):
+    def trades(self, portfolio, t=dt.datetime.today(), verbose=False):
         """
         Solve Markowiz portfolio problem with cvxpy
         """

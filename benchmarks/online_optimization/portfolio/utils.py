@@ -4,9 +4,8 @@ import cvxpy as cp
 import mlopt
 
 
-def create_mlopt_problem(n, m, n_periods, k=None,
-                         lambda_cost=None,
-                         tight_constraints=True):
+def create_problem(n, m, n_periods, k=None,
+                   lambda_cost=None):
 
     if lambda_cost is None:
         lambda_cost = {'risk': stg.RISK_COST,
@@ -28,20 +27,24 @@ def create_mlopt_problem(n, m, n_periods, k=None,
 
     # Formulate problem
     w = [cp.Variable(n) for t in range(n_periods + 1)]
+    p = [cp.Variable(m) for t in range(n_periods + 1)]
 
     # Sparsity constraints
     if k is not None:
-        s = [cp.Variable(n, boolean=True) for t in range(n_periods)]
+        s = [cp.Variable(n, integer=True) for t in range(n_periods)]
 
     # Define cost components
     cost = 0
     constraints = [w[0] == w_init]
+    if k is not None:
+        for t in range(n_periods):
+            constraints += [0 <= s[t], s[t] <= 1]
     for t in range(1, n_periods + 1):
 
-        risk_cost = lambda_cost['risk'] * (            
-            cp.sum_squares(cp.multiply(sqrt_Sigma_F, F.T * w[t])) +
+        risk_cost = lambda_cost['risk'] * (
+            cp.sum_squares(cp.multiply(sqrt_Sigma_F, p[t])) +
             cp.sum_squares(cp.multiply(sqrt_D, w[t])))
-        
+
         holding_cost = lambda_cost['borrow'] * \
             cp.sum(stg.BORROW_COST * cp.neg(w[t]))
 
@@ -49,28 +52,24 @@ def create_mlopt_problem(n, m, n_periods, k=None,
             lambda_cost['norm1_trade'] * cp.norm(w[t] - w[t-1], 1)
 
         cost += \
-            hat_r[t-1] * w[t] \
+            hat_r[t-1] @ w[t] \
             - risk_cost \
             - holding_cost \
             - transaction_cost
 
-        constraints += [cp.sum(w[t]) == 1.]
+        constraints += [F.T @ w[t] == p[t], cp.sum(w[t]) == 1.]
 
         if k is not None:
             # Cardinality constraint (big-M)
             constraints += [-s[t-1] <= w[t] - w[t-1], w[t] - w[t-1] <= s[t-1],
                             cp.sum(s[t-1]) <= k]
 
-    return mlopt.Optimizer(cp.Maximize(cost), constraints,
-                           log_level=logging.INFO,
-                           #  verbose=True,
-                           tight_constraints=tight_constraints,
-                           parallel=True,
-                           )
+    return cp.Problem(cp.Minimize(-cost), constraints)
+
 
 
 def get_problem_dimensions(df):
-    
+
     n, m = df.iloc[0]['F'].shape
 
     return n, m

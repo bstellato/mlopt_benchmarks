@@ -14,7 +14,7 @@ DATA_FOLDER = './online_optimization/portfolio/data'
 
 
 def get_dimensions(data_folder=DATA_FOLDER):
-    
+
     with pd.HDFStore(path.join(data_folder, "risk_data.h5")) as risk_data:
         exposures = risk_data['exposures']
 
@@ -180,19 +180,6 @@ def sample_around_points(df, n_total, radius={}, shuffle=True):
             # Round stuff
             if col in ['sqrt_Sigma_F', 'sqrt_D']:
                 samples = [np.maximum(s, 1e-05) for s in samples]
-
-            #  if col in ['s_init', 'past_d']:
-            #      samples = np.maximum(np.around(samples, decimals=0),
-            #                           0).astype(int)
-            #  elif col == 'z_init':
-            #      samples = np.minimum(np.maximum(
-            #          np.around(samples, decimals=0), 0), 1).astype(int)
-            #
-            #  elif col in ['P_load']:
-            #      samples = np.maximum(samples, 0)
-
-            #  elif col in ['E_init']:
-            #      samples = np.minimum(np.maximum(samples, 5.3), 10.1)
 
             df_row[col] = list(samples)
 
