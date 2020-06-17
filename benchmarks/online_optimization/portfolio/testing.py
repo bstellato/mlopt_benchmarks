@@ -65,7 +65,7 @@ df_history = learning_data(t_start=t_start,
                            T_periods=T_periods,
                            lambda_cost=lambda_cost)
 idx_pick = np.arange(len(df_history))
-#  np.random.shuffle(idx_pick)  # Debug, remove shuffle
+np.random.shuffle(idx_pick)  # Debug, remove shuffle
 n_history_train = int(len(df_history) * 0.8)
 test_idx = idx_pick[n_history_train:]
 df_history_test = df_history.iloc[test_idx].reset_index(drop=True)
