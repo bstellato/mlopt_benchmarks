@@ -2,11 +2,49 @@ import cvxpy as cp
 import numpy as np
 from control import ss, c2d
 import pandas as pd
+from tqdm import tqdm
 
 
-def is_outside_obstacles(p, obstacles_locations):
-    print("Point p = ", p)
-    for o in obstacles_locations:
+OBSTACLES = [
+        {'min': [-19, -16],
+         'max': [-11, -4]},
+        {'min': [-10, -14],
+         'max': [-3.5, -2.5]},
+        {'min': [-14, -2],
+         'max': [-3, 7]},
+        {'min': [-18, 8],
+         'max': [-2.5, 16]},
+        {'min': [-2, 2],
+         'max': [10, 12]},
+        {'min': [-2.5, -4.5],
+         'max': [3, 1]},
+        {'min': [-2.8, -12],
+         'max': [4, -6]},
+        {'min': [4, -4],
+         'max': [12, 0.5]},
+        {'min': [5, -15.5],
+         'max': [15, -7]},
+        {'min': [11, 3],
+         'max': [17.5, 17.5]}
+        ]
+
+
+def sample_points(obstacles, n=10):
+
+    list_p_0 = []
+
+    for i in tqdm(range(n), desc="Sampling points"):
+        # Varying problem parameter
+        p_0 = np.random.uniform([-5., -5.], [20., 20.])
+        while not is_outside_obstacles(p_0, obstacles):
+            p_0 = np.random.uniform([-5., -5.], [20., 20.])
+        list_p_0.append(p_0)
+
+    return pd.DataFrame({"p_init": list_p_0})
+
+
+def is_outside_obstacles(p, obstacles):
+    for o in obstacles:
 
         if (p[0] >= o['min'][0]) and (p[0] <= o['max'][0]) and \
                 (p[1] >= o['min'][1]) and (p[1] <= o['max'][1]):
@@ -15,25 +53,7 @@ def is_outside_obstacles(p, obstacles_locations):
     return True
 
 
-def sample_points(n):
-
-    df_samples = pd.DataFrame()
-
-    list_p_0 = []
-
-    for i in range(n):
-        # Varying problem parameter
-        p_0 = np.random.uniform([-5., -5.], [15., 15.])
-        while not is_outside_obstacles(p_0, obstacles_locations):
-            print("Not outside")
-            p_0 = np.random.uniform([-5., -5.], [15., 15.])
-
-        list_p_0.append(p_0)
-
-    return pd.Dataframe({"p_init": list_p_0})
-
-
-def create_problem(T=80):
+def create_problem(obstacles, T=80):
     # Define problem data
     d = 2        # Dimension 2D
     n = 2 * d    # Number of states
@@ -51,30 +71,7 @@ def create_problem(T=80):
     sqrtRu = np.sqrt(1e-02 * np.ones(d))
 
 
-    # Obstacles
-    obstacles_locations = [
-            {'min': [-19, -16],
-             'max': [-11, -4]},
-            {'min': [-10, -14],
-             'max': [-3.5, -2.5]},
-            {'min': [-14, -2],
-             'max': [-3, 7]},
-            {'min': [-18, 8],
-             'max': [-2.5, 16]},
-            {'min': [-2, 2],
-             'max': [10, 12]},
-            {'min': [-2.5, -4.5],
-             'max': [3, 1]},
-            {'min': [-2.8, -12],
-             'max': [4, -6]},
-            {'min': [4, -4],
-             'max': [12, 0.5]},
-            {'min': [5, -15.5],
-             'max': [15, -7]},
-            {'min': [11, 3],
-             'max': [17.5, 17.5]}
-            ]
-    n_obstacles = len(obstacles_locations)
+    n_obstacles = len(obstacles)
 
     # Dynamics (2D double integrator)
     Ac = np.block([[np.zeros((d, d)), np.eye(d)],
@@ -121,7 +118,7 @@ def create_problem(T=80):
 
         # Obstacle constraints
         for i in range(n_obstacles):
-            obs_loc = obstacles_locations[i]
+            obs_loc = obstacles[i]
             constraints += [p[t] >= obs_loc['max'] - M * delta_max[t][i],
                             p[t] <= obs_loc['min'] + M * delta_min[t][i]]
             constraints += [cp.sum(delta_min[t][i] + delta_max[t][i]) <= 2 * d - 1]

@@ -15,31 +15,59 @@ import pandas as pd
 STORAGE_DIR = "/home/gridsan/stellato/results/online/obstacle"
 
 
-np.random.seed(1)
 
 desc = 'Obstacle Avoidance Example'
 
 parser = argparse.ArgumentParser(description=desc)
-parser.add_argument('--horizon', type=int, default=30, metavar='N',
-                    help='horizon length (default: 30)')
+parser.add_argument('--n_obstacles', type=int, default=10, metavar='N', help='number of obstacles between 1 and 10 (default: 10)')
+
 arguments = parser.parse_args()
-T_horizon = arguments.horizon
-print(desc, " T = %d\n" % T_horizon)
+n_obstacles = arguments.n_obstacles
+print(desc, " n_obstacles = %d\n" % n_obstacles)
 
-EXAMPLE_NAME = STORAGE_DIR + '/obstacle_%d_' % T_horizon
-
+EXAMPLE_NAME = STORAGE_DIR + '/obstacle_%d_' % n_obstacles
 
 # Problem data
-n_train = 1000
+n_train = 10000
 seed_train = 0
+np.random.seed(seed_train)
+
+# Get first n_obstacles obstacles
+obstacles = u.OBSTACLES[:n_obstacles]
 
 # Get problem
-problem = u.create_problem(T=T_horizon)
+problem = u.create_problem(obstacles)
 
 # Create mlopt problem
-m_mlopt = mlopt.Optimizer(problem, parallel=True)
+m_mlopt = mlopt.Optimizer(problem, MIPGap=0.1, parallel=True)
 
 # Check if learning data already there
 if not os.path.isfile(EXAMPLE_NAME + 'data.pkl'):
-    # TODO: Continue from here. Get data by sampling in box
-    # over a corner of the state space
+    df_train = u.sample_points(obstacles, n_train)
+
+    # Get samples
+    m_mlopt.get_samples(df_train,
+                        parallel=True,
+                        filter_strategies=False)  # Filter strategies after saving
+    m_mlopt.save_training_data(EXAMPLE_NAME + 'data.pkl',
+                               delete_existing=True)
+else:
+    print("Loading data from file")
+    m_mlopt.load_training_data(EXAMPLE_NAME + 'data.pkl')
+
+
+# Filter strategies and resave
+m_mlopt.filter_strategies(parallel=True)
+m_mlopt.save_training_data(EXAMPLE_NAME + 'data_filtered.pkl',
+                           delete_existing=True)
+
+#  # Learn optimizer
+#  m_mlopt.train(learner=mlopt.PYTORCH,
+#                n_best=10,
+#                filter_strategies=False,  # Do not filter strategies again
+#                #  n_train_trials=2,
+#                parallel=True)
+#
+#  # Save model
+#  m_mlopt.save(EXAMPLE_NAME + 'model', delete_existing=True)
+#
