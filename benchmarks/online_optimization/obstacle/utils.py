@@ -53,16 +53,16 @@ def is_outside_obstacles(p, obstacles):
     return True
 
 
-def create_problem(obstacles, T=80):
+def create_problem(obstacles, T=20):
     # Define problem data
     d = 2        # Dimension 2D
     n = 2 * d    # Number of states
-    M = 100      # Big-M
+    M = 50       # Big-M
     deltaT = 0.1  # Time discretization
     p_max = 20 * np.ones(d)   # Maximum position
     p_min = -20 * np.ones(d)   # Minimum position
-    v_max = 5 * np.ones(d)   # Maximum position
-    v_min = - 5 * np.ones(d)   # Minimum position
+    v_max = 8 * np.ones(d)   # Maximum position
+    v_min = - 8 * np.ones(d)   # Minimum position
     v_0 = np.zeros(d)
     u_max = 10
     p_goal = np.array([-10.5, -10])

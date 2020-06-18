@@ -1,9 +1,9 @@
 #!/bin/zsh
 #SBATCH -c 1
-#SBATCH -n 32
+#SBATCH -n 40
 #SBATCH -N 1
 #SBATCH --time=2-00:00
-#SBATCH --gres=gpu:volta:1 -p gpu
+##SBATCH --gres=gpu:volta:1 -p gpu
 #SBATCH -o /home/gridsan/stellato/results/online/obstacle/obstacle_train_%A_N%a.txt
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
 #SBATCH --mail-user=bartolomeo.stellato@gmail.com

@@ -28,7 +28,7 @@ print(desc, " n_obstacles = %d\n" % n_obstacles)
 EXAMPLE_NAME = STORAGE_DIR + '/obstacle_%d_' % n_obstacles
 
 # Problem data
-n_train = 10000
+n_train = 100000
 seed_train = 0
 np.random.seed(seed_train)
 
@@ -39,7 +39,7 @@ obstacles = u.OBSTACLES[:n_obstacles]
 problem = u.create_problem(obstacles)
 
 # Create mlopt problem
-m_mlopt = mlopt.Optimizer(problem, MIPGap=0.1, parallel=True)
+m_mlopt = mlopt.Optimizer(problem, MIPGap=0.05, parallel=True)
 
 # Check if learning data already there
 if not os.path.isfile(EXAMPLE_NAME + 'data.pkl'):
