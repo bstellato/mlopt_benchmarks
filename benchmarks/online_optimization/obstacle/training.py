@@ -39,7 +39,7 @@ obstacles = u.OBSTACLES[:n_obstacles]
 problem = u.create_problem(obstacles)
 
 # Create mlopt problem
-m_mlopt = mlopt.Optimizer(problem, MIPGap=0.05, parallel=True)
+m_mlopt = mlopt.Optimizer(problem, Threads=1, MIPGap=0.05, parallel=True)
 
 # Check if learning data already there
 if not os.path.isfile(EXAMPLE_NAME + 'data.pkl'):
@@ -61,13 +61,13 @@ m_mlopt.filter_strategies(parallel=True)
 m_mlopt.save_training_data(EXAMPLE_NAME + 'data_filtered.pkl',
                            delete_existing=True)
 
-#  # Learn optimizer
-#  m_mlopt.train(learner=mlopt.PYTORCH,
-#                n_best=10,
-#                filter_strategies=False,  # Do not filter strategies again
-#                #  n_train_trials=2,
-#                parallel=True)
-#
-#  # Save model
-#  m_mlopt.save(EXAMPLE_NAME + 'model', delete_existing=True)
+# Learn optimizer
+m_mlopt.train(learner=mlopt.PYTORCH,
+              n_best=10,
+              filter_strategies=False,  # Do not filter strategies again
+              #  n_train_trials=2,
+              parallel=True)
+
+# Save model
+m_mlopt.save(EXAMPLE_NAME + 'model', delete_existing=True)
 #

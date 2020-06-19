@@ -53,7 +53,7 @@ def is_outside_obstacles(p, obstacles):
     return True
 
 
-def create_problem(obstacles, T=20):
+def create_problem(obstacles, T=40):
     # Define problem data
     d = 2        # Dimension 2D
     n = 2 * d    # Number of states
