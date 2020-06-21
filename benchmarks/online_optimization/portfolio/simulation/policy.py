@@ -115,7 +115,7 @@ class Optimal(BasePolicy):
                 constraints += [-s[t-1] <= w[t] - w[t-1], w[t] - w[t-1] <= s[t-1],
                                 cp.sum(s[t-1]) <= k]
 
-        self.problem = cp.Problem(cp.Maximize(cost), constraints)
+        self.problem = cp.Problem(cp.Minimize(-cost), constraints)
 
         # Store values
         self.vars = {'w': w}

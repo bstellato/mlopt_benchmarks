@@ -39,12 +39,14 @@ obstacles = u.OBSTACLES[:n_obstacles]
 problem = u.create_problem(obstacles)
 
 # Create mlopt problem
-m_mlopt = mlopt.Optimizer(problem, Threads=1,
+m_mlopt = mlopt.Optimizer(problem,
+                          Threads=1,  # to avoid issues with parallelization
                           #  MIPGap=0.05,
                           parallel=True)
 
 # Check if learning data already there
 if not os.path.isfile(EXAMPLE_NAME + 'data.pkl'):
+    print("Sampling points")
     df_train = u.sample_points(obstacles, n_train)
 
     # Get samples

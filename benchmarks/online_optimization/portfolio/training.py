@@ -72,7 +72,7 @@ if __name__ == '__main__':
         # Split dataset properly and shuffle
         idx_pick = np.arange(len(df_history))
         # DEBUG REMOVE SHUFFLE
-        np.random.shuffle(idx_pick)
+        #  np.random.shuffle(idx_pick)
         n_history_train = int(len(df_history) * 0.8)
 
         train_idx = idx_pick[:n_history_train]

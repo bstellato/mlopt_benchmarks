@@ -15,7 +15,7 @@ OBSTACLES = [
         {'min': [-18, 8],
          'max': [-2.5, 16]},
         {'min': [-2, 2],
-         'max': [10, 17]},
+         'max': [7, 17]},
         {'min': [-2.5, -4.5],
          'max': [3, 1]},
         {'min': [-2.8, -12],
@@ -24,23 +24,30 @@ OBSTACLES = [
          'max': [12, 0.5]},
         {'min': [5, -15.5],
          'max': [15, -7]},
-        {'min': [11, 3],
-         'max': [17.5, 17.5]}
+        {'min': [8, 3],
+         'max': [12, 12]}
         ]
 
 
-def sample_points(obstacles, n=10):
+
+def sample_points(obstacles, n=10, p_min=[-20, -20], p_max=[20, 20], integer=True):
 
     list_p_0 = []
 
-    for i in tqdm(range(n), desc="Sampling points"):
+    if integer:
+        samp = np.random.randint
+    else:
+        samp = np.random.uniform
+
+    for i in tqdm(range(n)):
         # Varying problem parameter
-        p_0 = np.random.uniform([5., 5.], [20., 20.])
+        p_0 = samp(p_min, p_max)
         while not is_outside_obstacles(p_0, obstacles):
-            p_0 = np.random.uniform([5., 5.], [20., 20.])
+            p_0 = samp(p_min, p_max)
         list_p_0.append(p_0)
 
     return pd.DataFrame({"p_init": list_p_0})
+
 
 
 def is_outside_obstacles(p, obstacles):
@@ -53,12 +60,12 @@ def is_outside_obstacles(p, obstacles):
     return True
 
 
-def create_problem(obstacles, T=20):
+def create_problem(obstacles, T=60):
     # Define problem data
     d = 2        # Dimension 2D
     n = 2 * d    # Number of states
     M = 50       # Big-M
-    deltaT = 0.3  # Time discretization
+    deltaT = 0.1  # Time discretization
     p_max = 20 * np.ones(d)   # Maximum position
     p_min = -20 * np.ones(d)   # Minimum position
     v_max = 8 * np.ones(d)   # Maximum position
@@ -68,7 +75,7 @@ def create_problem(obstacles, T=20):
     p_goal = np.array([-10.5, -10])
     v_goal = np.zeros(d)
     sqrtQp = np.sqrt(1. * np.ones(d))
-    sqrtRu = np.sqrt(1 * np.ones(d))
+    sqrtRu = np.sqrt(0.01 * np.ones(d))
 
 
     n_obstacles = len(obstacles)
