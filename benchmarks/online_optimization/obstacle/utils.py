@@ -49,18 +49,30 @@ def sample_points(obstacles, n=10, p_min=[-20, -20], p_max=[20, 20], integer=Tru
     return pd.DataFrame({"p_init": list_p_0})
 
 
-
 def is_outside_obstacles(p, obstacles):
+    shift = 0.6  # Make marging around obstacles
+
     for o in obstacles:
 
-        if (p[0] >= o['min'][0]) and (p[0] <= o['max'][0]) and \
-                (p[1] >= o['min'][1]) and (p[1] <= o['max'][1]):
+        if (p[0] >= o['min'][0] - shift) and \
+                (p[0] <= o['max'][0] + shift) and \
+                (p[1] >= o['min'][1] - shift) and \
+                (p[1] <= o['max'][1] + shift):
             return False
 
     return True
 
+#  def is_outside_obstacles(p, obstacles):
+#      for o in obstacles:
+#
+#          if (p[0] >= o['min'][0]) and (p[0] <= o['max'][0]) and \
+#                  (p[1] >= o['min'][1]) and (p[1] <= o['max'][1]):
+#              return False
+#
+#      return True
 
-def create_problem(obstacles, T=60):
+
+def create_problem(obstacles, T=60, return_variables=False):
     # Define problem data
     d = 2        # Dimension 2D
     n = 2 * d    # Number of states
@@ -150,4 +162,9 @@ def create_problem(obstacles, T=60):
     # Define problem
     problem = cp.Problem(cp.Minimize(cost), constraints)
 
-    return problem
+    if return_variables:
+        variables = {'p': p, 'p_goal': p_goal, 'p_min': p_min,
+                     'p_max': p_max, 'v': v, 'u': u}
+        return problem, variables
+    else:
+        return problem

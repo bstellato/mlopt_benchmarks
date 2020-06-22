@@ -20,7 +20,7 @@ STORAGE_DIR = "/home/gridsan/stellato/results/online/obstacle"
 
 desc = 'Obstacle Avoidance Example'
 seed_test = 1
-n_test = 100
+n_test = 10000
 np.random.seed(seed_test)
 
 parser = argparse.ArgumentParser(description=desc)
@@ -40,7 +40,7 @@ problem = u.create_problem(obstacles)
 
 # Load model
 m = mlopt.Optimizer.from_file(EXAMPLE_NAME + 'model')
-m.load_training_data(EXAMPLE_NAME + 'data_filtered.pkl')
+m.load_training_data(EXAMPLE_NAME + 'data.pkl')
 m.cache_factors()   # Cache KKT systems for speed
 
 # Get training dataframe
