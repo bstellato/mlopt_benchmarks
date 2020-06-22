@@ -38,10 +38,12 @@ p_init.value = p_0
 # Solve
 problem.solve(solver=cp.GUROBI, verbose=True)
 p_gurobi = p.value
+print("Gurobi solution time: %.4f" % problem.solver_stats.solve_time)
 
 # Solve with MLOPT
-m.solve(pd.DataFrame({'p_init': [p_0]}))
+res_mlopt = m.solve(pd.DataFrame({'p_init': [p_0]}))
 p_mlopt = [v for v in m.variables() if v.shape == (60, 2)][0].value
+print("MLOPT solution time: %.4f" % res_mlopt['time'])
 
 
 # Plot with obstacles
