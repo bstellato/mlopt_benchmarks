@@ -93,7 +93,7 @@ m._problem.solver_options.pop('MIPGap')  # Remove MIP Gap option
 results = []
 results_detail = []
 k_max = 101
-for k in [1] + list(range(10, min(k_max, m._learner.n_classes), 10)):
+for k in [1, 20, 40, 60, 80, 100]:
 
     print("n_best = %d" % k)
 
