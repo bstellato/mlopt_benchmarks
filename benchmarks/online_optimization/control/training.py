@@ -11,7 +11,7 @@ import os
 import pandas as pd
 
 
-STORAGE_DIR = "/home/gridsan/stellato/results/online/control"
+STORAGE_DIR = "/scratch/gpfs/bs37/mlopt_research/results/online/control/"
 
 
 np.random.seed(1)

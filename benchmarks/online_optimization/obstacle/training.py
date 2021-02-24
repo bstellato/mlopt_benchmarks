@@ -12,7 +12,7 @@ import pandas as pd
 
 
 
-STORAGE_DIR = "/home/gridsan/stellato/results/online/obstacle"
+STORAGE_DIR = "/scratch/gpfs/bs37/mlopt_research/results/online/obstacle/"
 
 
 

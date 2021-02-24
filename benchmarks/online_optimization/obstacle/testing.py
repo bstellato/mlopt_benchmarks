@@ -15,7 +15,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-STORAGE_DIR = "/home/gridsan/stellato/results/online/obstacle"
+STORAGE_DIR = "/scratch/gpfs/bs37/mlopt_research/results/online/obstacle/"
 
 
 desc = 'Obstacle Avoidance Example'
@@ -53,14 +53,20 @@ results_full = m._problem.solve_parametric(df,
 
 
 # Solve with Gurobi Heuristic
-m._problem.solver_options['MIPGap'] = 0.1  # 10% MIP Gap
+#  m._problem.solver_options['MIPGap'] = 0.1  # 10% MIP Gap
+# Focus on feasibility
+m._problem.solver_options['MIPFocus'] = 1
+# Limit time to one second
+m._problem.solver_options['TimeLimit'] = 1.
 results_heuristic = m._problem.solve_parametric(df,
                                                 parallel=True,
                                                 message="Compute " +
                                                 "tight constraints " +
                                                 "with heuristic MIP Gap 10 %% " +
                                                 "for test set")
-m._problem.solver_options.pop('MIPGap')  # Remove MIP Gap option
+#  m._problem.solver_options.pop('MIPGap')  # Remove MIP Gap option
+m._problem.solver_options.pop('MIPFocus')
+m._problem.solver_options.pop('TimeLimit')
 
 
 # Iterate over k

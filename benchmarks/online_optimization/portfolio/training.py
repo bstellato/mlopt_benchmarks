@@ -19,7 +19,7 @@ import argparse
 
 np.random.seed(1)
 
-STORAGE_DIR = "/home/gridsan/stellato/results/online/portfolio/"
+STORAGE_DIR = "/scratch/gpfs/bs37/mlopt_research/results/online/portfolio/"
 
 
 if __name__ == '__main__':
