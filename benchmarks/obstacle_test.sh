@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=obstacletest
+#SBATCH --array=2,4,6,8,10
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
 #SBATCH --mem-per-cpu=10G
-#SBATCH --time=2-00:00
+#SBATCH --time=4-00:00
 #SBATCH --gres=gpu:1
 #SBATCH -o /scratch/gpfs/bs37/mlopt_research/results/online/obstacle/obstacle_test_%A_N%a.txt
 ##SBATCH --mail-type=END,FAIL,TIME_LIMIT

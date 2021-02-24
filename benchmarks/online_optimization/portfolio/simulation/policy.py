@@ -141,7 +141,8 @@ class Optimal(BasePolicy):
             self.params['hat_r'][i].value = self.returns.loc[times[i]].values
 
         # Risk estimate
-        month = dt.date(t.year, t.month, 1)  # Get first day of month
+        # Get first day of month
+        month = dt.date(t.year, t.month, 1).strftime("%Y-%m-%d")
         F = self.risk_model['exposures'].loc[month].values
         sqrt_Sigma_F = \
             np.sqrt(self.risk_model['sigma_factors'].loc[month].values)

@@ -96,7 +96,7 @@ def extract_learning_data(data, t_start, t_end, T=1):
                 returns.loc[sample_times[t + period]].values
 
         # Risk estimate
-        month = dt.date(sample_times[t].year, sample_times[t].month, 1)
+        month = dt.date(sample_times[t].year, sample_times[t].month, 1).strftime("%Y-%m-%d")
         t_series['F'] = data['risk']['exposures'].loc[month].values
         t_series['sqrt_Sigma_F'] = \
             np.sqrt(data['risk']['sigma_factors'].loc[month].values)
