@@ -61,9 +61,9 @@ else:
 
 
 # Filter strategies and resave (already very few)
-#  m_mlopt.filter_strategies(parallel=True)
-#  m_mlopt.save_training_data(EXAMPLE_NAME + 'data_filtered.pkl',
-#                             delete_existing=True)
+m_mlopt.filter_strategies(parallel=True)
+m_mlopt.save_training_data(EXAMPLE_NAME + 'data_filtered.pkl',
+                           delete_existing=True)
 
 # Learn optimizer
 m_mlopt.train(learner=mlopt.PYTORCH,

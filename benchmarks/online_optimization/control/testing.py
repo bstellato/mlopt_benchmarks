@@ -34,6 +34,14 @@ problem, cost_function_data = u.control_problem(T_horizon, tau=tau)
 
 # Load model
 m = mlopt.Optimizer.from_file(EXAMPLE_NAME + 'model')
+#  m.load_training_data(EXAMPLE_NAME + 'data.pkl')
+#  m.cache_factors()   # Cache KKT systems for speed
+
+# Load training data and store unfiltered strategies (for statistics later)
+m.load_training_data(EXAMPLE_NAME + 'data.pkl')
+m.encoding_full = m.encoding
+
+# Load actual filterd data
 m.load_training_data(EXAMPLE_NAME + 'data_filtered.pkl')
 m.cache_factors()   # Cache KKT systems for speed
 

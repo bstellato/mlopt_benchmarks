@@ -14,7 +14,7 @@ import pandas as pd
 STORAGE_DIR = "/scratch/gpfs/bs37/mlopt_research/results/online/control/"
 
 
-np.random.seed(1)
+np.random.seed(0)
 
 
 if __name__ == '__main__':

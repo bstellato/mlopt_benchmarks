@@ -236,7 +236,7 @@ def basic_loop_solve(problem, params):
     for p in problem.parameters():
         p.value = params[p.name()]
     problem.solve(solver=cp.GUROBI)
-    if problem.status != 'optimal':
+    if problem.status not in ['optimal', 'optimal_inaccurate']:
         raise ValueError('Error in Gurobi solution')
     return get_solution(problem)
 

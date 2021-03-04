@@ -6,7 +6,6 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --mem-per-cpu=10G
 #SBATCH --time=4-00:00
-#SBATCH --gres=gpu:1
 #SBATCH --array=10,20
 #SBATCH -o /scratch/gpfs/bs37/mlopt_research/results/online/portfolio/portfolio_test_%A_N%a.txt
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT
