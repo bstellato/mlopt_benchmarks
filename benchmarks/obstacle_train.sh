@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=obstacletrain
-#SBATCH --array=2,4,6,8,10
+#SBATCH --array=8,10
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16

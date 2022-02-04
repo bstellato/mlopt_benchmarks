@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=controltrain
-#SBATCH --array=10,20,30,40,50,60
+#SBATCH --array=60
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16

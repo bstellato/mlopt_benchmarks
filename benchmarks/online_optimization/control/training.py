@@ -34,7 +34,7 @@ if __name__ == '__main__':
     tau = 1.0
     n_train = 100000
     n_test = n_traj  # Number of samples in test set (new trajectory)
-    seed_train = 0
+    seed_train = 2
     seed_test = 1
 
     print(desc, " N = %d\n" % T_horizon)
